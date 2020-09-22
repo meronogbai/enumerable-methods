@@ -13,4 +13,14 @@ module Enumerable
       i+=1
     end
   end
+  def my_select
+    elements = self.to_a
+    result = []
+    elements.my_each do |element|
+      if yield element
+        result.push(element)
+      end
+    end
+    result
+  end
 end
