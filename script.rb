@@ -59,5 +59,22 @@ module Enumerable
     end
     result
   end
+  
+  def my_count
+    elements self.to_a
+    count = 0
+    elements.my_each do |element|
+      count += 1
+    end
+    count
+  end
+
+  def my_map
+    elements self.to_a
+    elements.my_each_with_index do |element, i|
+      elements[i] = yield element
+    end
+    elements
+  end
 end
 
