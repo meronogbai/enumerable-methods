@@ -23,4 +23,17 @@ module Enumerable
     end
     result
   end
+
+  def my_all?
+    elements = self.to_a
+    result = true
+    elements.my_each do |element|
+      unless yield element
+        result = false
+      end
+    end
+    result
+  end
 end
+
+p [1,2,3,4].my_all? {|x| x>2}
