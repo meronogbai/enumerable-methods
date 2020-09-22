@@ -38,6 +38,17 @@ module Enumerable
     result
   end
 
+  def my_any?
+    elements = self.to_a
+    result = false
+    elements.my_each do |element|
+      if yield element
+        result = true
+      end
+    end
+    result
+  end
+
   def my_none?
     elements = self.to_a
     result = true
