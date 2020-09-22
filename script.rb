@@ -1,10 +1,12 @@
 module Enumerable
+
   def my_each
     elements = self.to_a
     for element in elements
       yield element
     end
   end
+
   def my_each_with_index
     elements = self.to_a
     i = 0
@@ -13,6 +15,7 @@ module Enumerable
       i+=1
     end
   end
+
   def my_select
     elements = self.to_a
     result = []
@@ -34,6 +37,16 @@ module Enumerable
     end
     result
   end
+
+  def my_none?
+    elements = self.to_a
+    result = true
+    elements.my_each do |element|
+      if yield element
+        result = false
+      end
+    end
+    result
+  end
 end
 
-p [1,2,3,4].my_all? {|x| x>2}
