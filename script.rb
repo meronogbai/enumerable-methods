@@ -1,39 +1,34 @@
 module Enumerable
   def my_each
-    if block_given?
-      elements = to_a
-      elements.each do |element|
-        yield element
-      end
-    else
-      return self.to_enum
+    return self.to_enum unless block_given?
+    elements = to_a
+    elements.each do |element|
+      yield element
     end
     if self.class == Range
-      self if self.class == Range
+      self
     else
       elements
     end
   end
 
   def my_each_with_index
-    if block_given?
-      elements = to_a
-      i = 0
-      elements.each do |element|
-        yield element, i
-        i += 1
-      end
-    else
-      return self.to_enum
+    return self.to_enum unless block_given?
+    elements = to_a
+    i = 0
+    elements.each do |element|
+      yield element, i
+      i += 1
     end
     if self.class == Range
-      self if self.class == Range
+      self
     else
       elements
     end
   end
 
   def my_select
+    return self.to_enum unless block_given?
     elements = to_a
     result = []
     elements.my_each do |element|
