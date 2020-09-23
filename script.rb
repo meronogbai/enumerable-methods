@@ -31,7 +31,7 @@ module Enumerable
     elements = self.to_a
     result = true
     elements.my_each do |element|
-      unless yield element
+      unless (yield element) == false
         result = false
       end
     end
@@ -42,7 +42,7 @@ module Enumerable
     elements = self.to_a
     result = false
     elements.my_each do |element|
-      if yield element
+      if (yield element) == true
         result = true
       end
     end
@@ -53,7 +53,7 @@ module Enumerable
     elements = self.to_a
     result = true
     elements.my_each do |element|
-      if yield element
+      if (yield element) == true 
         result = false
       end
     end
