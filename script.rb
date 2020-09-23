@@ -69,10 +69,14 @@ module Enumerable
     count
   end
 
-  def my_map
+  def my_map(proc = nil)
     elements = self.to_a
     elements.my_each_with_index do |element, i|
-      elements[i] = yield element
+      unless proc
+          elements[i] = yield element
+      else
+          elements[i] = proc.call(element)
+      end
     end
     elements
   end
@@ -81,7 +85,7 @@ module Enumerable
     elements = self.to_a
     accum = nil
     elements.my_each do |element| 
-      if !accum
+      unless accum
         accum = element
       else
         accum = yield accum, element
@@ -96,6 +100,3 @@ module Enumerable
   end
   
 end
-
-p [3, 6, 10].multiply_els 
-
