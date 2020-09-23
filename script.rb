@@ -37,11 +37,20 @@ module Enumerable
     result
   end
 
-  def my_all?
+  def my_all?(arg=nil)
     elements = to_a
+    if !block_given? && !arg
+      early_result = true
+      elements.my_each do |element|
+        unless element
+          return false
+        end
+      end
+      return early_result
+    end
     result = true
     elements.my_each do |element|
-      result = false unless (yield element) == false
+      result = false unless (yield element)
     end
     result
   end
@@ -108,3 +117,7 @@ end
 # p [1,2,3].my_each(&proc{|x| x>2}) == [1,2,3]
 # p [1,2,3].my_each_with_index.class == Enumerator
 # p (1..3).my_each_with_index(&proc{|x| x>2}) == (1..3)
+p [1,2,3].all?(&proc{|x| x>x/5}) == [1,2,3].my_all?(&proc{|x| x>x/5})
+p [1,2,3].all?(&proc{|x| x%2==0}) == [1,2,3].my_all?(&proc{|x| x%2==0})
+p [true, [false]].all? == [true, [false]].my_all?
+p [true,[true],false].all? == [true,[true],false].my_all?
