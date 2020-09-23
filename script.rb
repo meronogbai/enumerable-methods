@@ -61,7 +61,7 @@ module Enumerable
   end
   
   def my_count
-    elements self.to_a
+    elements = self.to_a
     count = 0
     elements.my_each do |element|
       count += 1
@@ -70,11 +70,32 @@ module Enumerable
   end
 
   def my_map
-    elements self.to_a
+    elements = self.to_a
     elements.my_each_with_index do |element, i|
       elements[i] = yield element
     end
     elements
   end
+
+  def my_inject
+    elements = self.to_a
+    accum = nil
+    elements.my_each do |element| 
+      if !accum
+        accum = element
+      else
+        accum = yield accum, element
+      end
+    end
+    accum
+  end
+
+  def multiply_els
+    elements = self.to_a
+    elements.my_inject {|product, number| product * number}
+  end
+  
 end
+
+p [3, 6, 10].multiply_els 
 
