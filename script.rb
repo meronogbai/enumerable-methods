@@ -1,17 +1,35 @@
 module Enumerable
   def my_each
-    elements = to_a
-    elements.each do |element|
-      yield element
+    if block_given?
+      elements = to_a
+      elements.each do |element|
+        yield element
+      end
+    else
+      return self.to_enum
+    end
+    if self.class == Range
+      self if self.class == Range
+    else
+      elements
     end
   end
 
   def my_each_with_index
-    elements = to_a
-    i = 0
-    elements.each do |element|
-      yield element, i
-      i += 1
+    if block_given?
+      elements = to_a
+      i = 0
+      elements.each do |element|
+        yield element, i
+        i += 1
+      end
+    else
+      return self.to_enum
+    end
+    if self.class == Range
+      self if self.class == Range
+    else
+      elements
     end
   end
 
@@ -90,3 +108,8 @@ module Enumerable
     elements.my_inject { |product, number| product * number }
   end
 end
+
+# p [1,2,3].my_each.class == Enumerator
+# p [1,2,3].my_each(&proc{|x| x>2}) == [1,2,3]
+# p [1,2,3].my_each_with_index.class == Enumerator
+# p (1..3).my_each_with_index(&proc{|x| x>2}) == (1..3)
