@@ -39,14 +39,23 @@ module Enumerable
 
   def my_all?(arg=nil)
     elements = to_a
-    if !block_given? && !arg
-      early_result = true
+    if arg == Numeric
+      elements.my_each do |element|
+        return false unless element.class == Integer || element.class == Float
+      end
+      return true
+    elsif arg.class == Class
+      elements.my_each do |element|
+        return false unless element.class == arg
+      end
+      return true
+    elsif !block_given? && !arg
       elements.my_each do |element|
         unless element
           return false
         end
       end
-      return early_result
+      return true
     end
     result = true
     elements.my_each do |element|
@@ -121,3 +130,6 @@ p [1,2,3].all?(&proc{|x| x>x/5}) == [1,2,3].my_all?(&proc{|x| x>x/5})
 p [1,2,3].all?(&proc{|x| x%2==0}) == [1,2,3].my_all?(&proc{|x| x%2==0})
 p [true, [false]].all? == [true, [false]].my_all?
 p [true,[true],false].all? == [true,[true],false].my_all?
+p [1,2,3].all?(Integer) == [1,2,3].my_all?(Integer)
+p [1,-2,3.4].all?(Numeric) == [1,-2,3.4].my_all?(Numeric)
+p ['word',1,2,3].all?(Integer) == ['word',1,2,3].my_all?(Integer)
