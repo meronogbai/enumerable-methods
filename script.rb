@@ -82,11 +82,21 @@ module Enumerable
     result
   end
 
-  def my_count
+  def my_count(arg=nil)
     elements = to_a
     count = 0
-    elements.my_each do |_element|
-      count += 1
+    if arg
+      elements.my_each do |element|
+        count += 1 if element == arg
+      end
+    elsif block_given?
+      elements.my_each do |element|
+        count += 1 if (yield element) == true
+      end
+    else
+      elements.my_each do |element|
+        count += 1
+      end
     end
     count
   end
@@ -126,10 +136,12 @@ end
 # p [1,2,3].my_each(&proc{|x| x>2}) == [1,2,3]
 # p [1,2,3].my_each_with_index.class == Enumerator
 # p (1..3).my_each_with_index(&proc{|x| x>2}) == (1..3)
-p [1,2,3].all?(&proc{|x| x>x/5}) == [1,2,3].my_all?(&proc{|x| x>x/5})
-p [1,2,3].all?(&proc{|x| x%2==0}) == [1,2,3].my_all?(&proc{|x| x%2==0})
-p [true, [false]].all? == [true, [false]].my_all?
-p [true,[true],false].all? == [true,[true],false].my_all?
-p [1,2,3].all?(Integer) == [1,2,3].my_all?(Integer)
-p [1,-2,3.4].all?(Numeric) == [1,-2,3.4].my_all?(Numeric)
-p ['word',1,2,3].all?(Integer) == ['word',1,2,3].my_all?(Integer)
+# p [1,2,3].all?(&proc{|x| x>x/5}) == [1,2,3].my_all?(&proc{|x| x>x/5})
+# p [1,2,3].all?(&proc{|x| x%2==0}) == [1,2,3].my_all?(&proc{|x| x%2==0})
+# p [true, [false]].all? == [true, [false]].my_all?
+# p [true,[true],false].all? == [true,[true],false].my_all?
+# p [1,2,3].all?(Integer) == [1,2,3].my_all?(Integer)
+# p [1,-2,3.4].all?(Numeric) == [1,-2,3.4].my_all?(Numeric)
+# p ['word',1,2,3].all?(Integer) == ['word',1,2,3].my_all?(Integer)
+# p ['word',1,2,3].all?(Integer) == ['word',1,2,3].my_all?(Integer)
+# p [1,2,3].count(&proc{|num|num%2==0}) == [1,2,3].my_count(&proc{|num|num%2==0})
