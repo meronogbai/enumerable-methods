@@ -49,6 +49,16 @@ module Enumerable
         return false unless element.class == arg
       end
       return true
+    elsif arg.class == Regexp
+      elements.my_each do |element|
+        return false unless element =~ arg
+      end
+      return true
+    elsif block_given?
+      elements.my_each do |element|
+        return false unless (yield element)
+      end
+      return true
     elsif !block_given? && !arg
       elements.my_each do |element|
         unless element
@@ -56,12 +66,12 @@ module Enumerable
         end
       end
       return true
+    elsif !(arg.class == Regexp) && !(arg.class == Class)
+      elements.my_each do |element|
+        return false unless element == arg
+      end
+      return true
     end
-    result = true
-    elements.my_each do |element|
-      result = false unless (yield element)
-    end
-    result
   end
 
   def my_any?
@@ -131,7 +141,7 @@ module Enumerable
     elements.my_inject { |product, number| product * number }
   end
 end
-
+# my all 
 # p [1,2,3].my_each.class == Enumerator
 # p [1,2,3].my_each(&proc{|x| x>2}) == [1,2,3]
 # p [1,2,3].my_each_with_index.class == Enumerator
@@ -145,3 +155,8 @@ end
 # p ['word',1,2,3].all?(Integer) == ['word',1,2,3].my_all?(Integer)
 # p ['word',1,2,3].all?(Integer) == ['word',1,2,3].my_all?(Integer)
 # p [1,2,3].count(&proc{|num|num%2==0}) == [1,2,3].my_count(&proc{|num|num%2==0})
+# p ['car', 'cat'].all?(/a/) == ['car', 'cat'].my_all?(/a/)
+# p ['car', 'cat'].all?(/t/) == ['car', 'cat'].my_all?(/t/)
+# p [5,5,5].all?(5) == [5,5,5].my_all?(5)
+# p [5,5,[5]].all?(5) == [5,5,[5]].my_all?(5)
+# p [1,2,3].my_all?{|x| x>0.1}
