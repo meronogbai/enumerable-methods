@@ -167,14 +167,16 @@ module Enumerable
     count
   end
 
-  def my_map(proc = nil)
-    elements = to_a
+  def my_map(arg = nil)
+    return self.to_enum if !block_given? && !arg
+    elements = self.clone
+    elements.to_a
     elements.my_each_with_index do |element, i|
-      elements[i] = if proc
-                      proc.call(element)
-                    else
-                      yield element
-                    end
+      if arg
+        elements[i] = arg.call(element)
+      else
+        elements [i] = yield element
+      end
     end
     elements
   end
@@ -238,3 +240,13 @@ end
 # p ['dog','car'].none?(5) == ['dog','car'].my_none?(5)
 # p [5,'dog','car'].none?(5) == [5,'dog','car'].my_none?(5)
 # p [1,2,3].my_none? { |x| x > 5 }
+# my map
+# p [1,2,3].map{|x| x==2} == [1,2,3].my_map{|x| x==2}
+# p [1,2,3].map(&proc{|x|x*2}) == [1,2,3].my_map(&proc{|x|x*2})
+# p [1,2,3].map.class==[1,2,3].my_map.class
+# p [1,2,3].map(&proc{|x|x%2}) == [1,2,3].my_map(&proc{|x|x%2})
+# p [1,2,3].my_map(proc{|x|x%2}){|a|a*2} == [1,2,3].my_map(proc{|x|x%2})
+# array = [1,2,3]
+# array_clone = array.clone
+# array.my_map{|num| num*2}
+# p array == array_clone
