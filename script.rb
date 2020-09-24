@@ -111,13 +111,41 @@ module Enumerable
     end
   end
 
-  def my_none?
+  def my_none?(arg=nil)
     elements = to_a
-    result = true
-    elements.my_each do |element|
-      result = false if (yield element) == true
+    if arg == Numeric
+      elements.my_each do |element|
+        return true unless element.class == Integer || element.class == Float
+      end
+      return false
+    elsif arg.class == Class
+      elements.my_each do |element|
+        return false if element.class == arg
+      end
+      return true
+    elsif arg.class == Regexp
+      elements.my_each do |element|
+        return false if element =~ arg
+      end
+      return true
+    elsif block_given?
+      elements.my_each do |element|
+        return false if (yield element)
+      end
+      return true
+    elsif !block_given? && !arg
+      elements.my_each do |element|
+        if element
+          return false
+        end
+      end
+      return true
+    elsif !(arg.class == Regexp) && !(arg.class == Class)
+      elements.my_each do |element|
+        return false if element == arg
+      end
+      return true
     end
-    result
   end
 
   def my_count(arg=nil)
@@ -190,6 +218,7 @@ end
 # p [5,5,5].all?(5) == [5,5,5].my_all?(5)
 # p [5,5,[5]].all?(5) == [5,5,[5]].my_all?(5)
 # p [1,2,3].my_all?{|x| x>0.1}
+# my any
 # p [0,[]].any? == [0,[]].my_any?
 # p [false, 0].any? == [false, 0].my_any?
 # p [1.1,'',[]].any?(Numeric) == [1.1,'',[]].my_any?(Numeric)
@@ -198,3 +227,14 @@ end
 # p ['dog', 'cat'].any?(/z/) == ['dog', 'cat'].my_any?(/z/)
 # p ['dog','car'].any?('cat') == ['dog','car'].my_any?('cat')
 # p ['cat', 'dog','car'].any?('cat') == ['cat', 'dog','car'].my_any?('cat')
+# my none
+# p [false, nil,false].none? == [false, nil,false].my_none?
+# p [false, nil,[]].none? == [false, nil,[]].my_none?
+# p [true,[]].none?(String) == [true,[]].my_none?(String)
+# p [true,[]].none?(Numeric) == [true,[]].my_none?(Numeric)
+# p ['',[]].none?(String) == ['',[]].my_none?(String)
+# p ['dog','cat'].none?(/x/) == ['dog','cat'].my_none?(/x/)
+# p ['dog', 'cat'].none?(/d/) == ['dog', 'cat'].my_none?(/d/)
+# p ['dog','car'].none?(5) == ['dog','car'].my_none?(5)
+# p [5,'dog','car'].none?(5) == [5,'dog','car'].my_none?(5)
+# p [1,2,3].my_none? { |x| x > 5 }
