@@ -37,7 +37,7 @@ module Enumerable
     result
   end
 
-  def my_all?(arg=nil)
+  def my_all?(arg = nil)
     elements = to_a
     if arg == Numeric
       elements.my_each do |element|
@@ -74,7 +74,7 @@ module Enumerable
     end
   end
 
-  def my_any?(arg=nil)
+  def my_any?(arg = nil)
     elements = to_a
     if arg == Numeric
       elements.my_each do |element|
@@ -111,7 +111,7 @@ module Enumerable
     end
   end
 
-  def my_none?(arg=nil)
+  def my_none?(arg = nil)
     elements = to_a
     if arg == Numeric
       elements.my_each do |element|
@@ -148,7 +148,7 @@ module Enumerable
     end
   end
 
-  def my_count(arg=nil)
+  def my_count(arg = nil)
     elements = to_a
     count = 0
     if arg
@@ -181,23 +181,48 @@ module Enumerable
     elements
   end
 
-  def my_inject
+  def my_inject(arg_first = nil, sym = nil) 
     elements = to_a
-    accum = nil
-    elements.my_each do |element|
-      accum = if accum
-                yield accum, element
-              else
-                element
-              end
+    if arg_first && sym
+      arg = sym
+      accum = arg_first
+      elements.my_each_with_index do |element, i|
+        accum = accum.send(arg, element)
+      end
+      return accum
+    elsif arg_first && !sym
+      arg = arg_first
+    elsif !arg_first && !sym
+      accum = nil
+      elements.my_each_with_index do |element, i|
+        if accum == nil
+          accum = element
+        else
+          accum = yield accum, element
+        end
+      end
+    end
+    if arg.class == Symbol
+      accum = nil
+      elements.my_each_with_index do |element, i|
+        if accum == nil
+          accum = element
+        else
+          accum = accum.send(arg, element)
+        end
+      end
+    elsif block_given? && arg
+      accum = arg
+      elements.my_each do |element|
+        accum = yield accum, element
+      end
     end
     accum
   end
+end
 
-  def multiply_els
-    elements = to_a
-    elements.my_inject { |product, number| product * number }
-  end
+def multiply_els(arr)
+  arr.my_inject(:*)
 end
 
 # my each
@@ -250,3 +275,16 @@ end
 # array_clone = array.clone
 # array.my_map{|num| num*2}
 # p array == array_clone
+# my inject
+# p (5..10).my_inject(:+) 
+# p (5..10).my_inject { |sum, n| sum + n }            #=> 45
+# p (1..3).inject(4) { |prod, n| prod * n } == (1..3).my_inject(4) { |prod, n| prod * n }
+# p [1,2,3].my_inject(:+)
+# p (1..3).my_inject(4) { |prod, n| prod * n }
+# p [1,2,3].my_inject {|x,y| x+y }
+p (1..3).inject(4) { |prod, n| prod * n } == (1..3).my_inject(4) { |prod, n| prod * n }
+p [1,2,3].inject(:+) == [1,2,3].my_inject(:+)
+p (1..9).inject(:+) == (1..9).my_inject(:+)
+p [1,2,3].inject(4, :*) == [1,2,3].my_inject(4, :*)
+p (1..3).inject(4, :*) == (1..3).my_inject(4, :*)
+p multiply_els([1,2,3]) == 6
