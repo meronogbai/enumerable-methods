@@ -74,13 +74,41 @@ module Enumerable
     end
   end
 
-  def my_any?
+  def my_any?(arg=nil)
     elements = to_a
-    result = false
-    elements.my_each do |element|
-      result = true if (yield element) == true
+    if arg == Numeric
+      elements.my_each do |element|
+        return true if element.class == Integer || element.class == Float
+      end
+      return false
+    elsif arg.class == Class
+      elements.my_each do |element|
+        return true if element.class == arg
+      end
+      return false
+    elsif arg.class == Regexp
+      elements.my_each do |element|
+        return true if element =~ arg
+      end
+      return false
+    elsif block_given?
+      elements.my_each do |element|
+        return true if (yield element)
+      end
+      return false
+    elsif !block_given? && !arg
+      elements.my_each do |element|
+        if element
+          return true
+        end
+      end
+      return false
+    elsif !(arg.class == Regexp) && !(arg.class == Class)
+      elements.my_each do |element|
+        return true if element == arg
+      end
+      return false
     end
-    result
   end
 
   def my_none?
@@ -141,11 +169,13 @@ module Enumerable
     elements.my_inject { |product, number| product * number }
   end
 end
-# my all 
+
+# my each
 # p [1,2,3].my_each.class == Enumerator
 # p [1,2,3].my_each(&proc{|x| x>2}) == [1,2,3]
 # p [1,2,3].my_each_with_index.class == Enumerator
 # p (1..3).my_each_with_index(&proc{|x| x>2}) == (1..3)
+# my all
 # p [1,2,3].all?(&proc{|x| x>x/5}) == [1,2,3].my_all?(&proc{|x| x>x/5})
 # p [1,2,3].all?(&proc{|x| x%2==0}) == [1,2,3].my_all?(&proc{|x| x%2==0})
 # p [true, [false]].all? == [true, [false]].my_all?
@@ -160,3 +190,11 @@ end
 # p [5,5,5].all?(5) == [5,5,5].my_all?(5)
 # p [5,5,[5]].all?(5) == [5,5,[5]].my_all?(5)
 # p [1,2,3].my_all?{|x| x>0.1}
+# p [0,[]].any? == [0,[]].my_any?
+# p [false, 0].any? == [false, 0].my_any?
+# p [1.1,'',[]].any?(Numeric) == [1.1,'',[]].my_any?(Numeric)
+# p [1,'',[]].any?(Numeric) == [1,'',[]].my_any?(Integer)
+# p ['dog', 'cat'].any?(/d/) == ['dog', 'cat'].my_any?(/d/)
+# p ['dog', 'cat'].any?(/z/) == ['dog', 'cat'].my_any?(/z/)
+# p ['dog','car'].any?('cat') == ['dog','car'].my_any?('cat')
+# p ['cat', 'dog','car'].any?('cat') == ['cat', 'dog','car'].my_any?('cat')
