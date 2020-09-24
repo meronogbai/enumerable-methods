@@ -46,7 +46,7 @@ module Enumerable
     elements = to_a
     if arg == Numeric
       elements.my_each do |element|
-        return false unless element.class == Integer || element.class == Float
+        return false unless element.class == Integer || element.class == Float || element.class == Complex
       end
       true
     elsif arg.class == Class
@@ -170,7 +170,7 @@ module Enumerable
     return to_enum if !block_given? && !arg
 
     elements = clone
-    elements.to_a
+    elements = elements.to_a
     elements.my_each_with_index do |element, i|
       elements[i] = if arg
                       arg.call(element)
