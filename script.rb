@@ -157,7 +157,7 @@ module Enumerable
         count += 1 if (yield element) == true
       end
     else
-      elements.my_each do |_element|
+      elements.my_each do
         count += 1
       end
     end
@@ -167,8 +167,7 @@ module Enumerable
   def my_map(arg = nil)
     return to_enum if !block_given? && !arg
 
-    elements = clone
-    elements = elements.to_a
+    elements = clone.to_a
     elements.my_each_with_index do |element, i|
       elements[i] = if arg
                       arg.call(element)
