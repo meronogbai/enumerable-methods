@@ -79,7 +79,7 @@ module Enumerable
     elements = to_a
     if arg == Numeric
       elements.my_each do |element|
-        return true if element.class == Integer || element.class == Float
+        return true if element.class == Integer || element.class == Float || element.class == Complex
       end
       false
     elsif arg.class == Class
@@ -114,7 +114,7 @@ module Enumerable
     elements = to_a
     if arg == Numeric
       elements.my_each do |element|
-        return true unless element.class == Integer || element.class == Float
+        return true unless element.class == Integer || element.class == Float || element.class == Complex
       end
       false
     elsif arg.class == Class
@@ -191,7 +191,7 @@ module Enumerable
       arg = arg_first
     elsif !arg_first && !sym
       accum = nil
-      elements.my_each_with_index do |element, _i|
+      elements.my_each do |element|
         accum = if accum.nil?
                   element
                 else
@@ -201,7 +201,7 @@ module Enumerable
     end
     if arg.class == Symbol
       accum = nil
-      elements.my_each_with_index do |element, _i|
+      elements.my_each do |element|
         accum = if accum.nil?
                   element
                 else
