@@ -1,13 +1,7 @@
 # rubocop: disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/ModuleLength, Metrics/MethodLength
 
 module Enumerable
-  def my_each
-    return to_enum unless block_given?
-
-    elements = to_a
-    elements.each do |element|
-      yield element
-    end
+  def range_return_array(elements)
     if self.class == Range
       self
     else
@@ -15,20 +9,24 @@ module Enumerable
     end
   end
 
+  def my_each
+    return to_enum unless block_given?
+
+    elements = to_a
+    elements.size.times do |index|
+      yield elements[index]
+    end
+    range_return_array(elements)
+  end
+
   def my_each_with_index
     return to_enum unless block_given?
 
     elements = to_a
-    i = 0
-    elements.each do |element|
-      yield element, i
-      i += 1
+    elements.size.times do |index|
+      yield elements[index], index
     end
-    if self.class == Range
-      self
-    else
-      elements
-    end
+    range_return_array(elements)
   end
 
   def my_select
